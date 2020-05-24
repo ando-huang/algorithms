@@ -1,4 +1,4 @@
-def mergesort(arr){ #mergesort takes in an array
+def mergesort(arr): #mergesort takes in an array
     if (len(arr) > 1): #if array is size 1 then its sorted
         mid = len(arr)//2 # mid is the middle of the array, integer index
         left = arr[:mid] #contains all elements 0-mid
