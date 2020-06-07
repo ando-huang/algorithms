@@ -11,18 +11,22 @@ def karatsuba(list1, list2):
     l2_high = list2[:midpt]
     l2_low = list2[midpt:]
 
-    high = karatsuba(l1_high, l2_high)
-    mid1 = karatsuba(l1_high, l2_low)
-    mid2 = karatsuba(l1_low, l2_high)
-    low = karatsuba(l1_low, l2_low)
+    #combine l1_high and l1_low, same for l2
+    amid = []
+    bmid = []
+    for i in range(len(l1_high)):
+        amid.append(l1_high[i]+l1_low[i])
+        bmid.append(l2_high[i]+l2_low[i])
 
-    #add mid1 and mid2
-    mid = []
-    for i in range(len(mid1)):
-        mid.append(mid1[i]+mid2[i])
+    hmid = karatsuba(amid, bmid)
+    hhi = karatsuba(l1_high, l2_high)
+    hlo = karatsuba(l1_low, l2_low)
 
     
-    return high+low+mid
+    for i in range(len(hhi)):
+        hmid[i] -= (hhi[i]+hlo[i])      
+    
+    return hhi+hmid+hlo
     
     
 #testcode
@@ -30,4 +34,4 @@ l1 = [2,4,4,5]
 l2 = [5, 1, 7, 2]
 res = karatsuba(l1, l2)
 print(res)
-print("actual\n10 22 38 61 41 43 10")
+print("10 22 38 61 41 43 10")
