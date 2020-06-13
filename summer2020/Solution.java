@@ -1,3 +1,5 @@
+package summer2020;
+
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 
@@ -7,10 +9,40 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
 class Result {
+
+    //grade school mult for small arrays and base case
+    private static List<Long> gradeSchool(List<Long> a, List<Long> b){
+        List<Long> result = new ArrayList<Long>();
+        Long[] aArr = new Long[a.size()];
+        Long[] bArr = new Long[b.size()];
+        for(int i = 0; i< a.size(); i++){
+            aArr[i] = a.get(i);
+            bArr[i] = b.get(i);
+        }
+        Long[] prod = new Long[a.size()*2];
+        for(int i = 0; i<(2*a.size()); i++){
+            prod[i] = Long.valueOf(0);
+        }
+        for(int i = 0; i < a.size(); i++){
+            for(int j = 0; j<b.size();j++){
+                prod[i+j] += mod(aArr[i]*bArr[j]);
+            }
+        }
+        result = Arrays.asList(prod);
+        return result;
+    }
+    
+    //mod function prevents overly large nums and negatives
+    private static Long mod(Long x){
+        if(x > 1000000009)
+            return Long.valueOf(x%1000000009);
+        return x;
+    }
 
     /*
      * Complete the 'smellCosmos' function below.
@@ -23,19 +55,43 @@ class Result {
 
     public static List<Long> smellCosmos(List<Long> a, List<Long> b) {
     // Write your code here
-        List<Long> ahi = new ArrayList<Long>(a.subList(0, a.size() / 2));
-        List<Long> alo = new ArrayList<Long>(a.subList(a.size() / 2, a.size()));
-        List<Long> bhi = new ArrayList<Long>(b.subList(0, b.size() / 2));
-        List<Long> blo = new ArrayList<Long>(b.subList(b.size() / 2, b.size()));
-        List<Long> amid = new ArrayList<Long>();
-        List<Long> bmid = new ArrayList<Long>();
-        List<Long> h = new ArrayList<Long>();
-
-
-        for(int i = 0; i<ahi.size(); i++){
-            amid.add(alo.get(i)+ahi.get(i));
-            bmid.add(bhi.get(i)+blo.get(i));
+        //base case for length < 16
+        if(a.size() < 16){
+            return gradeSchool(a, b);
         }
+        List<Long> h = new ArrayList<Long>();
+        //convert a and b to arrays
+        Long[] aR = (Long[])a.toArray();
+        Long[] bR = (Long[])b.toArray();
+        
+        Long[] aHigh = new Long[aR.length/2];
+        Long[] aLow = new Long[aR.length/2];
+        Long[] bHigh = new Long[bR.length/2];
+        Long[] bLow = new Long[bR.length/2];
+        Long[] aMid = new Long[aR.length/2];
+        Long[] bMid = new Long[bR.length/2];
+        
+        //populate the subarrs
+        for(int i = 0; i< aR.length/2; i++){
+            aHigh[i] = aR[i];
+            bHigh[i] = bR[i];
+            aLow[i] = aR[i+aR.length/2];
+            bLow[i] = bR[i+bR.length/2];
+            aMid[i] = aHigh[i]+ aLow[i];
+            bMid[i] = bHigh[i]+ bLow[i];
+        }
+        //all subarrays have right items
+        Long[] hHigh = (Long[])smellCosmos(Arrays.asList(aHigh), Arrays.asList(bHigh)).toArray();
+        Long[] hLow = (Long[])smellCosmos(Arrays.asList(aLow), Arrays.asList(bLow)).toArray();
+        Long[] hMid = (Long[])smellCosmos(Arrays.asList(aMid), Arrays.asList(bMid)).toArray();
+
+        Long[] hComb = new Long[aR.length+bR.length-1];
+
+        for(int i = 0; i< hComb.length; i++){
+            
+        }
+        
+        
 
 
         return h;
