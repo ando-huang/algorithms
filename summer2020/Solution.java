@@ -88,11 +88,15 @@ class Result {
         Long[] hComb = new Long[aR.length+bR.length-1];
 
         for(int i = 0; i< hComb.length; i++){
-            
+            hComb[i] = Long.valueOf(0);
+        }
+        for(int i = 0; i<hHigh.length; i++){
+            hComb[i+a.size()] += hHigh[i]; 
+            hComb[i] += hLow[i];
+            hComb[i+a.size()/2] += hMid[i];
         }
         
-        
-
+        h = Arrays.asList(hComb);
 
         return h;
     }
