@@ -1,4 +1,7 @@
 #include <bits/stdc++.h>
+#include <stdio.h>
+#include <vector>
+#include <iostream>
 
 using namespace std;
 
@@ -6,12 +9,34 @@ string ltrim(const string &);
 string rtrim(const string &);
 vector<string> split(const string &);
 
+/*
+    Modulo function to reduce overly large numbers and negatives
+*/
+int mod(int l){
+    if (l > 1000000009){
+        return l%1000000009;
+    }
+    else{
+        return l;
+    }
+}
 
 /**
-    gradeschool algorithm to solve for basecase
+    gradeschool multiplication for arrays of small size(less than 16)
 **/
 vector<long> gradeSchool(vector<long> a, vector<long> b){
+    vector<long> h;
+    //long* harr = (long*)malloc((a.size()+b.size()-1)*sizeof(long));
+    for(int i = 0; i<(a.size()+b.size()-1); i++){
+        h[i] = 0;
+    }
+    for(int i = 0; i<a.size(); i++){
+        for(int j = 0; j<b.size(); j++){
+            h[i+j] += b[i]*a[i];
+        }
+    }
 
+    return h;
 }
 
 /*
@@ -25,10 +50,19 @@ vector<long> gradeSchool(vector<long> a, vector<long> b){
 
 vector<long> smellCosmos(vector<long> a, vector<long> b) {
     // Write your code here
-    if(a.size() < 64){
+    if(a.size() < 16){
         return gradeSchool(a, b);
     }
-    vector<long> h = vector<long>;
+
+    vector<long> h;
+
+    //actual karatsuba implementation
+    vector<long> aHigh;
+    vector<long> aLow;
+    vector<long> bHigh;
+    vector<long> bLow;
+    vector<long> hMid;
+    return h;
 
 }
 
