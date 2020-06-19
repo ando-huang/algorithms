@@ -10,6 +10,11 @@ class AVLNode{
     public AVLNode left;
     public AVLNode right;
     public int height;
+    
+    public boolean sign; //bool used for flip
+    public int leftMax;  //int used for flip
+    public int rightMin; //int used for flip
+
     AVLNode(String key, int value){
         this.key=key;
         this.value=value;
@@ -98,6 +103,25 @@ class AVLTree{
         return doFind(node.right, key);
     }
 
+    /**
+     * flips the signs of all nodes(stocks) within range [a,b]
+     * @param key - starting key a (inclusive)
+     * @param endKey - ending key b (inclusive)
+     * 
+     * @author Andrew Huang
+     */
+    public static void flip(String key, String endKey){
+        doFlip(root, key, endKey);
+    }
+
+    // @author Andrew Huang
+    public static void doFlip(AVLNode node, String key, String endKey){
+        if(node == null){
+            return;
+        }
+        //determine which nodes to flip
+    }
+
     AVLTree(){
         root = null;
     }
@@ -107,6 +131,22 @@ public class Solution {
 
     public static void main(String[] args) {
         /* Enter your code here. Read input from STDIN. Print output to STDOUT. Your class should be named Solution. */
+
+        //figure out stdin/stdout
+        AVLTree stocks = new AVLTree();
+        int func = -1;
+        String key = "";
+        int value = -1;
+        String endKey ="";
+        //read inputs
+        if(func == 1){
+            //set value
+            stocks.insert(key, value);
+        }
+        else if(func == 2){
+            //set endKey
+            
+        }
 
         /**
          *  1st function: Insert( a , k ){
@@ -120,6 +160,16 @@ public class Solution {
          *  3rd function: find( a ){
          *      travels to node with key a, and returns value k associated with it.
          *  }
-         */
+         * 
+         * 
+         *  Input/Output
+         *  
+         *  Input:
+         *  1 a k -> insert node with key a, value k
+         *  2 a b -> flips sign value of all nodes in range [a,b]
+         *  3 a   -> returns the value associated with key a
+         * 
+         * 
+         */ 
     }
 }
