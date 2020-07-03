@@ -4,6 +4,7 @@ import java.text.*;
 import java.math.*;
 import java.util.regex.*;
 
+
 class AVLNode{
     public String key;
     public int value;
@@ -131,9 +132,15 @@ public class Solution {
 
     public static void main(String[] args) {
         /* Enter your code here. Read input from STDIN. Print output to STDOUT. Your class should be named Solution. */
+        int n;
+        Scanner s = new Scanner(System.in);
+        n = Integer.parseInt(s.nextLine());
 
-        //figure out stdin/stdout
         AVLTree stocks = new AVLTree();
+
+        for(int i = 0; i < n; i++){
+            //read each new instruction and implement the appropriate calls
+        }
         int func = -1;
         String key = "";
         int value = -1;
