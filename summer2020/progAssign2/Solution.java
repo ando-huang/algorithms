@@ -11,10 +11,10 @@ class AVLNode{
     public AVLNode left;
     public AVLNode right;
     public int height;
-    
+    //below are added augmentations for assignment
     public boolean sign; //bool used for flip
-    public int leftMax;  //int used for flip
-    public int rightMin; //int used for flip
+    public String leftMax;  //key used for flip
+    public String rightMin; //key used for flip
 
     AVLNode(String key, int value){
         this.key=key;
@@ -104,6 +104,22 @@ class AVLTree{
         return doFind(node.right, key);
     }
 
+/**
+     * 
+     * @param node - starting node from which the flip is being called upon
+     * @param key - lower limit of flip (inclusive)
+     * @param endKey - upper limit of the flip (inclusive)
+     * 
+     * @author Andrew Huang
+     */
+    public static void doFlip(AVLNode node, String key, String endKey){
+        if(node == null){
+            return;
+        }
+        //mess with logic a bit here, compare to max of the left tree and min of right
+        
+    }
+
     /**
      * flips the signs of all nodes(stocks) within range [a,b]
      * @param key - starting key a (inclusive)
@@ -113,14 +129,6 @@ class AVLTree{
      */
     public static void flip(String key, String endKey){
         doFlip(root, key, endKey);
-    }
-
-    // @author Andrew Huang
-    public static void doFlip(AVLNode node, String key, String endKey){
-        if(node == null){
-            return;
-        }
-        //determine which nodes to flip
     }
 
     AVLTree(){
