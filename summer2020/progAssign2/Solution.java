@@ -4,50 +4,49 @@ import java.text.*;
 import java.math.*;
 import java.util.regex.*;
 
-
-class AVLNode{
+class AVLNode {
     public String key;
     public int value;
     public AVLNode left;
     public AVLNode right;
     public int height;
-    //below are added augmentations for assignment
-    public int sign; //bool used for flip
-    public String leftMax;  //key used for flip
-    public String rightMin; //key used for flip
+    // below are added augmentations for assignment
+    public int sign; // bool used for flip
+    public String leftMax; // key used for flip
+    public String rightMin; // key used for flip
 
-    AVLNode(String key, int value){
-        this.key=key;
-        this.value=value;
-        this.height=1;
-        this.sign = 1; //false means -1^0, no sign change
+    AVLNode(String key, int value) {
+        this.key = key;
+        this.value = value;
+        this.height = 1;
+        this.sign = 1; // false means -1^0, no sign change
     }
 }
 
-class AVLTree{
+class AVLTree {
     public static AVLNode root;
 
-    public static int getHeight(AVLNode node){
-        if(node == null)
+    public static int getHeight(AVLNode node) {
+        if (node == null)
             return 0;
         return node.height;
     }
 
-    public static void updateInfo(AVLNode node){ //costs O(1)
+    public static void updateInfo(AVLNode node) { // costs O(1)
         node.height = Math.max(getHeight(node.left), getHeight(node.right)) + 1;
     }
 
-    public static void setRightMin(AVLNode node){ //costs logn
+    public static void setRightMin(AVLNode node) { // costs logn
         AVLNode curr = node.right;
-        while(curr.left != null){
+        while (curr.left != null) {
             curr = curr.left;
         }
         node.rightMin = curr.key;
     }
 
-    public static void setLeftMax(AVLNode node){ //costs logn
+    public static void setLeftMax(AVLNode node) { // costs logn
         AVLNode curr = node.left;
-        while(curr.right != null){
+        while (curr.right != null) {
             curr = curr.right;
         }
         node.leftMax = curr.key;
@@ -61,14 +60,14 @@ class AVLTree{
         node.left = nodelr;
         updateInfo(node);
         updateInfo(nodel);
-        
+
         setLeftMax(node);
         setRightMin(node);
-        //pushdown(node);
+        // pushdown(node);
         setLeftMax(nodel);
         setRightMin(nodel);
-        //pushdown(nodel);
-        //maybe for nodelr too
+        // pushdown(nodel);
+        // maybe for nodelr too
         return nodel;
     }
 
@@ -83,11 +82,11 @@ class AVLTree{
 
         setLeftMax(node);
         setRightMin(node);
-        //pushdown(node);
+        // pushdown(node);
         setLeftMax(noder);
         setRightMin(noder);
-        //pushdown(noder);
-        //maybe for noderl too
+        // pushdown(noder);
+        // maybe for noderl too
         return noder;
     }
 
@@ -122,16 +121,20 @@ class AVLTree{
             node.right = rightRotate(node.right);
             return leftRotate(node);
         }
-        //minmax updates might be unnecessary but whatever
+        // minmax updates might be unnecessary but whatever
         setLeftMax(node);
         setRightMin(node);
         pushdown(node);
         return node;
     }
 
-    public static void insert(String key, int value) { root = doInsert(root, key, value); }
+    public void insert(String key, int value) {
+        root = doInsert(root, key, value);
+    }
 
-    public static int find(String key) { return doFind(root, key); }
+    public static int find(String key) {
+        return doFind(root, key);
+    }
 
     public static int doFind(AVLNode node, String key) {
         if (node == null)
@@ -143,88 +146,74 @@ class AVLTree{
         return doFind(node.right, key);
     }
 
-/**
+    /**
      * 
-     * @param node - starting node from which the flip is being called upon
-     * @param key - lower limit of flip (inclusive)
+     * @param node   - starting node from which the flip is being called upon
+     * @param key    - lower limit of flip (inclusive)
      * @param endKey - upper limit of the flip (inclusive)
      * 
      * @author Andrew Huang
      */
-    public static void doFlip(AVLNode node, String key, String endKey){
-        if(node == null){
-            return; //nothing to do
+    public static void doFlip(AVLNode node, String key, String endKey) {
+        if (node == null) {
+            return; // nothing to do
         }
-        
 
-        //mess with logic a bit here, compare to max of the left tree and min of right
-        
+        // mess with logic a bit here, compare to max of the left tree and min of right
+
     }
 
     /**
      * flips the signs of all nodes(stocks) within range [a,b]
-     * @param key - starting key a (inclusive)
+     * 
+     * @param key    - starting key a (inclusive)
      * @param endKey - ending key b (inclusive)
      * 
      * @author Andrew Huang
      */
-    public static void flip(String key, String endKey){
+    public static void flip(String key, String endKey) {
         doFlip(root, key, endKey);
     }
 
-    public static void pushdown(AVLNode node){
-        if(node.sign == -1){
+    public static void pushdown(AVLNode node) {
+        if (node.sign == -1) {
             node.sign *= -1;
-        }
-        else{
+        } else {
             node.left.sign *= node.sign;
             node.right.sign *= node.sign;
             node.sign = 1;
         }
     }
 
-    AVLTree(){
+    AVLTree() {
         root = null;
     }
 }
 
 public class Solution {
 
-    public static void main(String[] args) {
-        /* Enter your code here. Read input from STDIN. Print output to STDOUT. Your class should be named Solution. */
-        int n;
-        Scanner s = new Scanner(System.in);
-        n = Integer.parseInt(s.nextLine());
+    public static void main(String[] args) throws IOException {
+        AVLTree stonks = new AVLTree();
 
-        AVLTree stocks = new AVLTree();
-        char[] temp = new char[16]; //potential input len?
-        char[] ticker = new char[5]; //longest ticker can be 5 chars
-        String input;
-        int operation;
-        String stock;
-        String endStock;
-        int val;
-        for(int i = 0; i < n; i++){
-            //read each new instruction and implement the appropriate calls
-            input = s.nextLine();
-            operation = Integer.parseInt(input.substring(0, 1));
-            temp = input.toCharArray();
-            for(int j = 2; j < 8; j++){
-                if(temp[j] != ' '){
-                    ticker[j-2] = temp[j];
-                }
-                else{
-                    break;
-                }
+        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+        String input = in.readLine();
+        int n = Integer.parseInt(input);
+
+        for (int i = 0; i < n; i++) {
+            input = in.readLine();
+            String[] data = input.split(" ");
+            int operation = Integer.parseInt(data[0]);
+
+            if (operation == 1) {
+                stonks.insert(data[1], Integer.parseInt(data[2]));
             }
-            stock = new String(ticker);
-            stock = stock.strip();
-            val = 0;
-            if(operation == 1){
-                stocks.insert(stock, val);
+
+            else if (operation == 2){
+                stonks.flip(data[1], data[2]);
             }
-            for(int k = 0; k<ticker.length; k++){
-                ticker[k] = ' ';
+
+            else if (operation == 3){
+                stonks.find(data[1]);
             }
         }
         
