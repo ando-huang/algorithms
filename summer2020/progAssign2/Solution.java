@@ -27,6 +27,13 @@ class AVLNode {
 class AVLTree {
     public static AVLNode root;
 
+    public static void inorderPrint(AVLNode node){
+        if(node == null){return;}
+        inorderPrint(node.left);
+        System.out.println(node.key);
+        inorderPrint(node.right);
+    }
+
     public static int getHeight(AVLNode node) {
         if (node == null)
             return 0;
@@ -35,7 +42,6 @@ class AVLTree {
 
     public static void updateInfo(AVLNode node) { // costs O(1)
         node.height = Math.max(getHeight(node.left), getHeight(node.right)) + 1;
-        //update node.min = ;
         if(node.right != null){
             node.max = node.right.max;
         }
@@ -44,6 +50,8 @@ class AVLTree {
             node.min = node.left.min;
         }
         else{ node.min = node.key; }
+        //System.out.println(node.key + " min " + node.min);
+        //System.out.println(node.key + " max " + node.max);
     }
 
     /**
@@ -54,7 +62,7 @@ class AVLTree {
         if(node == null){
             return;
         }
-        if (node.sign == -1) { //if the sign was flipped, then readjust the current value to reflect that
+        if (node.sign == -1) { //if the sign was flipped, directly apply the flip to the value
             node.value *= -1;
         }
         if(node.left  != null){ node.left.sign *= node.sign; }
@@ -84,7 +92,7 @@ class AVLTree {
         return noder;
     }
 
-    public static int getBalance(AVLNode node) {
+    public static int getBalance(AVLNode node) { //do not change
         if (node == null)
             return 0;
         return getHeight(node.left) - getHeight(node.right);
@@ -153,19 +161,17 @@ class AVLTree {
         if (node == null) {
             return; // nothing to do
         }
-        //if range of subtree is fully inside [key, endkey]
+        pushdown(node);
         if(key.compareTo(node.min) <= 0 && endKey.compareTo(node.max)>=0){ //whole subtree is within
             node.sign *= -1;
             return;
         }
         else if(key.compareTo(node.max) > 0 || endKey.compareTo(node.min) < 0){
-            //subtree is not within the range
             return;
         }
         else{
             if(key.compareTo(node.key) <= 0 && endKey.compareTo(node.key) >= 0){
-                node.value *= -1;
-                return;
+                node.value *= -1;     
             }
             doFlip(node.left, key, endKey);
             doFlip(node.right, key, endKey);
