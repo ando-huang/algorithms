@@ -1,8 +1,5 @@
 import java.io.*;
-import java.util.*;
-import java.text.*;
-import java.math.*;
-import java.util.regex.*;
+//import java.util.*;
 
 class AVLNode {
     public String key;
@@ -12,14 +9,18 @@ class AVLNode {
     public int height;
     // below are added augmentations for assignment
     public int sign; // bool used for flip
-    public String leftMax; // key used for flip
-    public String rightMin; // key used for flip
+    public String min;
+    public String max;
 
     AVLNode(String key, int value) {
         this.key = key;
         this.value = value;
         this.height = 1;
+        this.right = null;
+        this.left = null;
         this.sign = 1; // false means -1^0, no sign change
+        this.min = key;
+        this.max = key;
     }
 }
 
@@ -34,22 +35,31 @@ class AVLTree {
 
     public static void updateInfo(AVLNode node) { // costs O(1)
         node.height = Math.max(getHeight(node.left), getHeight(node.right)) + 1;
+        //update node.min = ;
+        if(node.right != null){
+            node.max = node.right.max;
+        }
+        else{ node.max = node.key; }
+        if(node.left != null){
+            node.min = node.left.min;
+        }
+        else{ node.min = node.key; }
     }
 
-    public static void setRightMin(AVLNode node) { // costs logn
-        AVLNode curr = node.right;
-        while (curr.left != null) {
-            curr = curr.left;
+    /**
+     * helps redistribute the signs for all the nodes during operations
+     * @param node
+     */
+    public static void pushdown(AVLNode node) {
+        if(node == null){
+            return;
         }
-        node.rightMin = curr.key;
-    }
-
-    public static void setLeftMax(AVLNode node) { // costs logn
-        AVLNode curr = node.left;
-        while (curr.right != null) {
-            curr = curr.right;
+        if (node.sign == -1) { //if the sign was flipped, then readjust the current value to reflect that
+            node.value *= -1;
         }
-        node.leftMax = curr.key;
+        if(node.left  != null){ node.left.sign *= node.sign; }
+        if(node.right != null){ node.right.sign *= node.sign; }
+        node.sign = 1;
     }
 
     public static AVLNode rightRotate(AVLNode node) {
@@ -60,14 +70,6 @@ class AVLTree {
         node.left = nodelr;
         updateInfo(node);
         updateInfo(nodel);
-
-        setLeftMax(node);
-        setRightMin(node);
-        // pushdown(node);
-        setLeftMax(nodel);
-        setRightMin(nodel);
-        // pushdown(nodel);
-        // maybe for nodelr too
         return nodel;
     }
 
@@ -79,14 +81,6 @@ class AVLTree {
         node.right = noderl;
         updateInfo(node);
         updateInfo(noder);
-
-        setLeftMax(node);
-        setRightMin(node);
-        // pushdown(node);
-        setLeftMax(noder);
-        setRightMin(noder);
-        // pushdown(noder);
-        // maybe for noderl too
         return noder;
     }
 
@@ -99,6 +93,9 @@ class AVLTree {
     public static AVLNode doInsert(AVLNode node, String key, int value) {
         if (node == null)
             return new AVLNode(key, value);
+        
+        pushdown(node);
+        
         if (key.compareTo(node.key) < 0)
             node.left = doInsert(node.left, key, value);
         else if (key.compareTo(node.key) > 0)
@@ -121,10 +118,6 @@ class AVLTree {
             node.right = rightRotate(node.right);
             return leftRotate(node);
         }
-        // minmax updates might be unnecessary but whatever
-        setLeftMax(node);
-        setRightMin(node);
-        pushdown(node);
         return node;
     }
 
@@ -132,13 +125,15 @@ class AVLTree {
         root = doInsert(root, key, value);
     }
 
-    public static int find(String key) {
+    public int find(String key) {
         return doFind(root, key);
     }
 
+    //modified to include the carry sign
     public static int doFind(AVLNode node, String key) {
         if (node == null)
             return -1;
+        pushdown(node);
         if (key.equals(node.key))
             return node.value;
         else if (key.compareTo(node.key) < 0)
@@ -158,9 +153,23 @@ class AVLTree {
         if (node == null) {
             return; // nothing to do
         }
-
-        // mess with logic a bit here, compare to max of the left tree and min of right
-
+        //if range of subtree is fully inside [key, endkey]
+        if(key.compareTo(node.min) <= 0 && endKey.compareTo(node.max)>=0){ //whole subtree is within
+            node.sign *= -1;
+            return;
+        }
+        else if(key.compareTo(node.max) > 0 || endKey.compareTo(node.min) < 0){
+            //subtree is not within the range
+            return;
+        }
+        else{
+            if(key.compareTo(node.key) <= 0 && endKey.compareTo(node.key) >= 0){
+                node.value *= -1;
+                return;
+            }
+            doFlip(node.left, key, endKey);
+            doFlip(node.right, key, endKey);
+        }
     }
 
     /**
@@ -171,17 +180,11 @@ class AVLTree {
      * 
      * @author Andrew Huang
      */
-    public static void flip(String key, String endKey) {
-        doFlip(root, key, endKey);
-    }
-
-    public static void pushdown(AVLNode node) {
-        if (node.sign == -1) {
-            node.sign *= -1;
-        } else {
-            node.left.sign *= node.sign;
-            node.right.sign *= node.sign;
-            node.sign = 1;
+    public void flip(String key, String endKey) {
+        //make sure the keys are in order, just housekeeping
+        if(key.compareTo(endKey) < 0){doFlip(root, key, endKey);}
+        else{ //equivalent keys or endkey comes before key
+            doFlip(root, endKey, key);
         }
     }
 
@@ -197,50 +200,27 @@ public class Solution {
 
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
         String input = in.readLine();
-        int n = Integer.parseInt(input);
+        int n = Integer.parseInt(input); //size of list of inputs
 
         for (int i = 0; i < n; i++) {
-            input = in.readLine();
-            String[] data = input.split(" ");
-            int operation = Integer.parseInt(data[0]);
+            input = in.readLine(); //resetting the input every time
+            String[] data = input.split(" "); //creates an array of strings with the inputs
+            int operation = Integer.parseInt(data[0]); //not needed but just for simplicity
 
             if (operation == 1) {
-                stonks.insert(data[1], Integer.parseInt(data[2]));
+                stonks.insert(data[1], Integer.parseInt(data[2])); //insert(k, v)
             }
 
-            else if (operation == 2){
-                stonks.flip(data[1], data[2]);
+            else if (operation == 2) {
+                stonks.flip(data[1], data[2]);                     //flip(k, j)
             }
 
-            else if (operation == 3){
-                stonks.find(data[1]);
+            else if (operation == 3) {
+                int x = stonks.find(data[1]);                      //find(k)
+                System.out.println(x);
             }
         }
-        
-
-
-        /**
-         *  1st function: Insert( a , k ){
-         *      inserts a new stock (node) into the tree with associated value k
-         *  }
-         * 
-         *  2nd function: flip( a ,  b ){
-         *      flips the sign of all the values in range [a,b] (inclusive)
-         *  }
-         * 
-         *  3rd function: find( a ){
-         *      travels to node with key a, and returns value k associated with it.
-         *  }
-         * 
-         * 
-         *  Input/Output
-         *  
-         *  Input:
-         *  1 a k -> insert node with key a, value k
-         *  2 a b -> flips sign value of all nodes in range [a,b]
-         *  3 a   -> returns the value associated with key a
-         * 
-         * 
-         */ 
+        //done with the reading
+        in.close();
     }
 }
