@@ -12,7 +12,7 @@ class AVLNode{
     public AVLNode right;
     public int height;
     //below are added augmentations for assignment
-    public boolean sign; //bool used for flip
+    public int sign; //bool used for flip
     public String leftMax;  //key used for flip
     public String rightMin; //key used for flip
 
@@ -20,6 +20,7 @@ class AVLNode{
         this.key=key;
         this.value=value;
         this.height=1;
+        this.sign = 1; //false means -1^0, no sign change
     }
 }
 
@@ -32,27 +33,61 @@ class AVLTree{
         return node.height;
     }
 
-    public static void updateInfo(AVLNode node){
+    public static void updateInfo(AVLNode node){ //costs O(1)
         node.height = Math.max(getHeight(node.left), getHeight(node.right)) + 1;
     }
 
+    public static void setRightMin(AVLNode node){ //costs logn
+        AVLNode curr = node.right;
+        while(curr.left != null){
+            curr = curr.left;
+        }
+        node.rightMin = curr.key;
+    }
+
+    public static void setLeftMax(AVLNode node){ //costs logn
+        AVLNode curr = node.left;
+        while(curr.right != null){
+            curr = curr.right;
+        }
+        node.leftMax = curr.key;
+    }
+
     public static AVLNode rightRotate(AVLNode node) {
+        pushdown(node);
         AVLNode nodel = node.left;
         AVLNode nodelr = nodel.right;
         nodel.right = node;
         node.left = nodelr;
         updateInfo(node);
         updateInfo(nodel);
+        
+        setLeftMax(node);
+        setRightMin(node);
+        //pushdown(node);
+        setLeftMax(nodel);
+        setRightMin(nodel);
+        //pushdown(nodel);
+        //maybe for nodelr too
         return nodel;
     }
 
     public static AVLNode leftRotate(AVLNode node) {
+        pushdown(node);
         AVLNode noder = node.right;
         AVLNode noderl = noder.left;
         noder.left = node;
         node.right = noderl;
         updateInfo(node);
         updateInfo(noder);
+
+        setLeftMax(node);
+        setRightMin(node);
+        //pushdown(node);
+        setLeftMax(noder);
+        setRightMin(noder);
+        //pushdown(noder);
+        //maybe for noderl too
         return noder;
     }
 
@@ -87,6 +122,10 @@ class AVLTree{
             node.right = rightRotate(node.right);
             return leftRotate(node);
         }
+        //minmax updates might be unnecessary but whatever
+        setLeftMax(node);
+        setRightMin(node);
+        pushdown(node);
         return node;
     }
 
@@ -114,8 +153,10 @@ class AVLTree{
      */
     public static void doFlip(AVLNode node, String key, String endKey){
         if(node == null){
-            return;
+            return; //nothing to do
         }
+        
+
         //mess with logic a bit here, compare to max of the left tree and min of right
         
     }
@@ -129,6 +170,17 @@ class AVLTree{
      */
     public static void flip(String key, String endKey){
         doFlip(root, key, endKey);
+    }
+
+    public static void pushdown(AVLNode node){
+        if(node.sign == -1){
+            node.sign *= -1;
+        }
+        else{
+            node.left.sign *= node.sign;
+            node.right.sign *= node.sign;
+            node.sign = 1;
+        }
     }
 
     AVLTree(){
@@ -145,23 +197,38 @@ public class Solution {
         n = Integer.parseInt(s.nextLine());
 
         AVLTree stocks = new AVLTree();
-
+        char[] temp = new char[16]; //potential input len?
+        char[] ticker = new char[5]; //longest ticker can be 5 chars
+        String input;
+        int operation;
+        String stock;
+        String endStock;
+        int val;
         for(int i = 0; i < n; i++){
             //read each new instruction and implement the appropriate calls
+            input = s.nextLine();
+            operation = Integer.parseInt(input.substring(0, 1));
+            temp = input.toCharArray();
+            for(int j = 2; j < 8; j++){
+                if(temp[j] != ' '){
+                    ticker[j-2] = temp[j];
+                }
+                else{
+                    break;
+                }
+            }
+            stock = new String(ticker);
+            stock = stock.strip();
+            val = 0;
+            if(operation == 1){
+                stocks.insert(stock, val);
+            }
+            for(int k = 0; k<ticker.length; k++){
+                ticker[k] = ' ';
+            }
         }
-        int func = -1;
-        String key = "";
-        int value = -1;
-        String endKey ="";
-        //read inputs
-        if(func == 1){
-            //set value
-            stocks.insert(key, value);
-        }
-        else if(func == 2){
-            //set endKey
-            
-        }
+        
+
 
         /**
          *  1st function: Insert( a , k ){
