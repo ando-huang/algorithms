@@ -1,18 +1,23 @@
 a = input().split()
 b = input().split()
 
-size = len(a)
+n = len(a)
 
 #dp table
-dp = [size][size]
+dp = [n][n]
 
-at = [size]
+#alignment table
+at = [n][n]
 
-def mod(n):
-    if(n>10000000009):
-        return n%10000000009
-    else:
-        return n
+#for reducing the size of large numbers
+def mod(a):
+    modulo = 1000000009
+    if(a >= modulo):
+        return a%modulo
+    elif(a < 0):
+        return (modulo + a%modulo)%modulo
+    return a
+    
 
 #returns highest score of a table
 def geneAlign(aList, bList):
